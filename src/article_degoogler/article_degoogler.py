@@ -17,7 +17,7 @@ def clean_href(url: str) -> str:
     return url
 
 
-def process_html(content: str) -> str:
+def process_html(content: str) -> tuple[str, int]:
     pattern = re.compile(
         r'href=(["\'])https://www\.google\.com/url\?q=([^"\']+)\1',
         re.IGNORECASE,
@@ -27,15 +27,18 @@ def process_html(content: str) -> str:
         url = match.group(2)
         cleaned = clean_href(url)
         return f"href={quote}{cleaned}{quote}"
-    return pattern.sub(replacer, content)
+
+    result, count = pattern.subn(replacer, content)
+    return result, count
 
 
-def process_file(path: str) -> None:
+def process_file(path: str) -> int:
     with open(path, "r", encoding="utf-8") as f:
         text = f.read()
-    new_text = process_html(text)
+    new_text, edits = process_html(text)
     with open(path, "w", encoding="utf-8") as f:
         f.write(new_text)
+    return edits
 
 
 def main():
@@ -46,7 +49,11 @@ def main():
     for root, dirs, files in os.walk(directory):
         for name in files:
             if name.lower().endswith((".html", ".htm")):
-                process_file(os.path.join(root, name))
+                path = os.path.join(root, name)
+                print(f"Fixing {path}")
+                edits = process_file(path)
+                print(f"{edits} edits")
+    print("complete")
 
 
 if __name__ == "__main__":
