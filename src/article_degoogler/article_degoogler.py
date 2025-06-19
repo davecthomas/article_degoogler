@@ -29,7 +29,37 @@ def process_html(content: str) -> tuple[str, int]:
         return f"href={quote}{cleaned}{quote}"
 
     result, count = pattern.subn(replacer, content)
-    return result, count
+
+    # Add ``target="_blank"`` to all links that navigate away from the current
+    # page.  Internal fragment links (``href"="#...")`` are left untouched.
+    target_pattern = re.compile(r"<a([^>]*)>", re.IGNORECASE)
+
+    def add_target(match: re.Match) -> str:
+        attrs = match.group(1)
+        href_match = re.search(r"href=([\"'])([^\"']*)\1", attrs, re.IGNORECASE)
+        if not href_match:
+            return match.group(0)
+        href = href_match.group(2)
+        if href.startswith('#'):
+            return match.group(0)
+        target_match = re.search(r"target=([\"'])([^\"']*)\1", attrs, re.IGNORECASE)
+        if target_match:
+            if target_match.group(2) == "_blank":
+                return match.group(0)
+            def repl(m: re.Match) -> str:
+                q = m.group(1)
+                return f"target={q}_blank{q}"
+
+            attrs_new = re.sub(r"target=([\"'])([^\"']*)\1", repl, attrs, flags=re.IGNORECASE)
+            add_target.edits += 1
+            return f"<a{attrs_new}>"
+        else:
+            add_target.edits += 1
+            return f"<a{attrs} target=\"_blank\">"
+
+    add_target.edits = 0
+    result = target_pattern.sub(add_target, result)
+    return result, count + add_target.edits
 
 
 def process_file(path: str) -> int:
