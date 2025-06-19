@@ -3,7 +3,7 @@
 # PEP 621-compliant metadata
 [project]
 name = "article-degoogler"
-version = "0.1.0"
+version = "0.1.1"
 description = "Clean up exported web content to remove Google-injected link decorations"
 authors = [{ name = "Dave Thomas", email = "davidcthomas@gmail.com" }]
 license = { text = "MIT" }
@@ -12,8 +12,14 @@ requires-python = ">=3.12,<3.13"
 dependencies = []
 
 [project.scripts]
-fix-links = "fix_links:main"
+fix-links = "article_degoogler.fix_links:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/article_degoogler"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src"]

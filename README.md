@@ -2,7 +2,9 @@
 
 `article-degoogler` cleans up exported HTML files by removing Google-injected
 redirect links. It walks a directory tree, rewriting links in any `.html` or
-`.htm` file so that they point directly at their targets.
+`.htm` file so that they point directly at their targets.  The distribution
+provides a standard `article_degoogler` Python package exposing a
+`__version__` attribute.
 
 ## Installation
 
