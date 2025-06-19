@@ -31,7 +31,9 @@ poetry install
 
 After installation the `fix-links` command will be available. Provide a
 directory containing exported HTML files and each file will be processed in
-place.
+place. While running, the command prints the path of each file being fixed and
+how many links were rewritten. Once all files are processed it prints
+``complete``.
 
 ```bash
 fix-links path/to/exported-html
