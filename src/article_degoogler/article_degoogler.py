@@ -4,13 +4,16 @@ import sys
 
 
 def clean_href(url: str) -> str:
-    """Remove Google redirect prefix and '/&amp;sa' query from a URL."""
+    """Remove Google redirect prefix and trailing ``&sa=`` parameters."""
     prefix = "https://www.google.com/url?q="
     if url.startswith(prefix):
         url = url[len(prefix):]
-    cut_pos = url.find('/&amp;sa')
-    if cut_pos != -1:
-        url = url[:cut_pos]
+
+    # Strip ``&sa=`` query parameters which Google adds for tracking.  These
+    # may appear with either a literal ampersand or the HTML encoded
+    # ``&amp;`` variant.  Everything from the ``&`` through the end of the
+    # string should be discarded when found.
+    url = re.sub(r"&(amp;)?sa=.*", "", url, flags=re.IGNORECASE)
     return url
 
 
