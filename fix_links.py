@@ -1,0 +1,50 @@
+import os
+import re
+import sys
+
+
+def clean_href(url: str) -> str:
+    """Remove Google redirect prefix and '/&amp;sa' query from a URL."""
+    prefix = "https://www.google.com/url?q="
+    if url.startswith(prefix):
+        url = url[len(prefix):]
+    cut_pos = url.find('/&amp;sa')
+    if cut_pos != -1:
+        url = url[:cut_pos]
+    return url
+
+
+def process_html(content: str) -> str:
+    pattern = re.compile(
+        r'href=(["\'])https://www\.google\.com/url\?q=([^"\']+)\1',
+        re.IGNORECASE,
+    )
+    def replacer(match: re.Match) -> str:
+        quote = match.group(1)
+        url = match.group(2)
+        cleaned = clean_href(url)
+        return f"href={quote}{cleaned}{quote}"
+    return pattern.sub(replacer, content)
+
+
+def process_file(path: str) -> None:
+    with open(path, "r", encoding="utf-8") as f:
+        text = f.read()
+    new_text = process_html(text)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(new_text)
+
+
+def main():
+    if len(sys.argv) != 2:
+        print(f"Usage: {sys.argv[0]} DIRECTORY")
+        sys.exit(1)
+    directory = sys.argv[1]
+    for root, dirs, files in os.walk(directory):
+        for name in files:
+            if name.lower().endswith((".html", ".htm")):
+                process_file(os.path.join(root, name))
+
+
+if __name__ == "__main__":
+    main()
