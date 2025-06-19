@@ -1,17 +1,19 @@
-[tool.poetry]
+# Tell the editor exactly which JSON Schema to use since parser plugin doesn't like project.dependencies
+"$schema" = "https://raw.githubusercontent.com/pypa/pep621/main/pyproject.toml.schema.json"
+# PEP 621-compliant metadata
+[project]
 name = "article-degoogler"
 version = "0.1.0"
 description = "Clean up exported web content to remove Google-injected link decorations"
-authors = ["Dave Thomas <dave@example.com>"]
-license = "MIT"
+authors = [{ name = "Dave Thomas", email = "davidcthomas@gmail.com" }]
+license = { text = "MIT" }
 readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = []
 
-[tool.poetry.dependencies]
-python = "^3.8"
-
-[tool.poetry.scripts]
+[project.scripts]
 fix-links = "fix_links:main"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
