@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "article-degoogler"
+version = "0.1.0"
+description = "Clean up exported web content to remove Google-injected link decorations"
+authors = ["Dave Thomas <dave@example.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.scripts]
+fix-links = "fix_links:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
